@@ -5,19 +5,10 @@ mod interactions;
 use serenity::{
     async_trait,
     client::{bridge::gateway::GatewayIntents, Client, Context, EventHandler},
-    http::AttachmentType,
-    model::{
-        channel::Message,
-        id::{ChannelId, UserId},
-        interactions::Interaction,
-        prelude::{Activity, OnlineStatus, Ready},
-    },
-    prelude::TypeMapKey,
+    model::{interactions::Interaction, prelude::Ready},
 };
 
 use dotenv::dotenv;
-use std::time::{Duration, UNIX_EPOCH};
-use std::{collections::HashMap, time::SystemTime};
 
 pub struct Handler;
 
@@ -28,8 +19,6 @@ impl EventHandler for Handler {
 
         info!("Ready!");
     }
-
-    async fn message(&self, ctx: Context, new_message: Message) {}
 
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if interaction.data.is_some() {

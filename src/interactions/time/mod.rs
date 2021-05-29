@@ -31,9 +31,14 @@ pub async fn register(ctx: &Context) {
                         .kind(ApplicationCommandOptionType::SubCommand)
                         .create_sub_option(|o| {
                             o.name("duration")
-                                .description("Duration in seconds (max 48 hours)")
-                                .kind(ApplicationCommandOptionType::Integer)
+                                .description("Duration (max 48 hours)")
+                                .kind(ApplicationCommandOptionType::String)
                                 .required(true)
+                        })
+                        .create_sub_option(|o| {
+                            o.name("description")
+                                .description("Timer description")
+                                .kind(ApplicationCommandOptionType::String)
                         })
                 })
         })

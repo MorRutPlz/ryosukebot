@@ -27,8 +27,12 @@ pub async fn handle(ctx: &Context, interaction: Interaction) {
                 .await
                 .ok();
         }
-        Err(_) => {
-            let suffixes = "`nsec`, `ns` -- nanoseconds\n\
+        Err(_) => parse_error(ctx, interaction).await,
+    }
+}
+
+pub async fn parse_error(ctx: &Context, interaction: Interaction) {
+    let suffixes = "`nsec`, `ns` -- nanoseconds\n\
                 `usec`, `us` -- microseconds\n\
                 `msec`, `ms` -- milliseconds\n\
                 `seconds`, `second`, `sec`, `s`\n\
@@ -39,21 +43,19 @@ pub async fn handle(ctx: &Context, interaction: Interaction) {
                 `months`, `month`, `M` -- defined as 30.44 days\n\
                 `years`, `year`, `y` -- defined as 365.25 days";
 
-            interaction
-                .create_interaction_response(&ctx.http, |r| {
-                    r.kind(InteractionResponseType::ChannelMessageWithSource)
-                        .interaction_response_data(|d| {
-                            d.content("Invalid duration specified").embed(|e| {
-                                e.field("Example duration", "4h 32m", false).field(
-                                    "Supported suffixes",
-                                    suffixes,
-                                    false,
-                                )
-                            })
-                        })
+    interaction
+        .create_interaction_response(&ctx.http, |r| {
+            r.kind(InteractionResponseType::ChannelMessageWithSource)
+                .interaction_response_data(|d| {
+                    d.content("Invalid duration specified").embed(|e| {
+                        e.field("Example duration", "4h 32m", false).field(
+                            "Supported suffixes",
+                            suffixes,
+                            false,
+                        )
+                    })
                 })
-                .await
-                .ok();
-        }
-    }
+        })
+        .await
+        .ok();
 }

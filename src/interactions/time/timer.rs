@@ -10,30 +10,49 @@ use serenity::{
 };
 use tokio::time::sleep;
 
-use crate::interactions::get_option;
+use crate::interactions::{get_option, time::seconds};
 
 pub async fn handle(ctx: &Context, interaction: Interaction) {
     let duration = match get_option(0, &interaction) {
         Some(n) => match n.value.as_ref() {
-            Some(n) => match n.as_u64() {
+            Some(n) => match n.as_str() {
                 Some(n) => {
-                    if n > 172800 {
+                    let duration = match humantime::parse_duration(n) {
+                        Ok(n) => n,
+                        Err(_) => {
+                            seconds::parse_error(ctx, interaction).await;
+                            return;
+                        }
+                    };
+
+                    if duration.as_secs() > 172800 {
                         response(
                             ctx,
                             &interaction,
-                            "The duration must be less than 172800 seconds".to_string(),
+                            "The duration must be less than 48 hours".to_string(),
                         )
                         .await;
                         return;
                     }
 
-                    Duration::seconds(n as i64)
+                    Duration::from_std(duration).unwrap()
                 }
                 None => return,
             },
             None => return,
         },
         None => return,
+    };
+
+    let description = match get_option(1, &interaction) {
+        Some(n) => match n.value.as_ref() {
+            Some(n) => match n.as_str() {
+                Some(n) => n.to_owned(),
+                None => "".to_string(),
+            },
+            None => "".to_string(),
+        },
+        None => "".to_string(),
     };
 
     {
@@ -46,9 +65,10 @@ pub async fn handle(ctx: &Context, interaction: Interaction) {
             ChannelId(848020803568402482)
                 .send_message(&ctx.http, |m| {
                     m.content(format!(
-                        "<@{}> Your timer for [{}] is up!",
+                        "<@{}> Your timer for [{}] is up! **{}**",
                         user_id,
-                        humantime::format_duration(duration.to_std().unwrap())
+                        humantime::format_duration(duration.to_std().unwrap()),
+                        description
                     ))
                 })
                 .await
