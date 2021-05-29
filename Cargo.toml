@@ -1,0 +1,31 @@
+[package]
+name = "ryosukebot"
+version = "0.1.0"
+authors = ["Alsan Ali <morrutplz@protonmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.19"
+dotenv = "0.15.0"
+env_logger = "0.8.3"
+humantime = "2.1.0"
+log = "0.4.14"
+reqwest = { version = "0.11.3", features = ["rustls-tls", "json", "multipart", "stream"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time"] }
+
+[dependencies.serenity]
+version = "0.10.7"
+default-features = false
+features = [
+    "builder",
+    "cache",
+    "client",
+    "gateway",
+    "http",
+    "model",
+    "utils",
+    "rustls_backend",
+    "unstable_discord_api"
+]
